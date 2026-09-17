@@ -103,7 +103,7 @@ body{
 }
 
 .music-info {
-    background-color: rgba(255,255,,255, 0.5);
+    background-color: rgba(255,255,255, 0.5);
     border-radius: 15px 15px 0 0;
     position: absolute;
     top: 0;
@@ -111,10 +111,38 @@ body{
     width: calc(100% - 40px);
     opacity: 0;
     transform: translateY(0%);
+    padding: 10px 10px 10px 150px;
+    transition: transform 0.3s ease-in, opacity 0.3s 
+    ease-in;
+
 
 }
 
+.music-info h4 {
+    margin: 0;
+}
 
+.music-container.play .music-info {
+    opacity: 1;
+    transform: translateY(-100%);
 
-18:05 <--
+}
+
+.progress-container {
+    background-color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    height: 4px;
+    width: 100%;
+
+}
+
+.progress {
+    background-color: #fe8daa;
+    border-radius: 5px;
+    height: 100%;
+    width: 0%;
+    transition: width 0.1s linear;
+}
 
