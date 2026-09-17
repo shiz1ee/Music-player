@@ -20,7 +20,7 @@ body {
 }
 
 .music-container {
-  background-color: #944ab4;
+  background-color: #ed1640;
   border-radius: 15px;
   box-shadow: 0 20px 20px 0 rgba(111, 93, 93, 0.6);
   display: flex;
@@ -82,9 +82,9 @@ body {
 }
 
 .action-btn {
-  background-color: #944ab4;
+  background-color: #ed1640;
   border: 0;
-  color: #562156;
+  color: #f3f3f6;
   font-size: 20px;
   cursor: pointer;
   padding: 10px;
@@ -92,7 +92,7 @@ body {
 }
 
 .action-btn.action-btn-big {
-  color: #4f3472;
+  color: #f8f6fb;
   font-size: 30px;
 }
 
@@ -101,7 +101,7 @@ body {
 }
 
 .music-info {
-  background-color: rgba(235, 76, 216, 0.989);
+  background-color:  #9f304a;
   border-radius: 15px 15px 0 0;
   position: absolute;
   top: 0;
@@ -133,7 +133,7 @@ body {
 }
 
 .progress {
-  background-color: #fe8daa;
+  background-color: #010101;
   border-radius: 5px;
   height: 100%;
   width: 0%;
@@ -141,7 +141,7 @@ body {
 }
 
 .queue-container {
-  background-color: #944ab4;
+  background-color:  #ed1640;
   border-radius: 15px;
   width: 400px;
   padding: 20px;
@@ -157,7 +157,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #562156;
+  color: #fbf4fb;
   margin-left: 20px;
 
 }
