@@ -16,6 +16,11 @@ const folderInput = document.querySelector('#folder-input')
 const playlistsContainer = document.querySelector('#playlists')
 //song titles
 const songs = ['hey', 'summer', 'ukulele']
+const localPlaylist = {
+    id: 'local',
+    name: 'local',
+    songs: songs
+}
 let playlist = [...songs]
 
 //keep trak of da song
@@ -28,9 +33,14 @@ displayQueue()
 
 //update song details 
 function loadSong(song) {
-    title.innerText = song
-    audio.src = `music/${song}.mp3`
-    cover.src = `images/${song}.jpg`
+    if (typeof song === 'string') {
+        title.innerText = song
+        audio.src = `music/${song}.mp3`
+        cover.src = `images/${song}.jpg`
+    } else {
+        title.innerText = song.name.replace('.mp3', '')
+        audio.src = URL.createObjectURL(song)
+    }
 }
 
 
@@ -149,7 +159,8 @@ function loadPlaylists() {
 
         playlistsContainer.innerHTML = '';
 
-        request.result.forEach(playlist => {
+        request.result.forEach(savedPlaylist => {
+
 
             const playlistElement = document.createElement('div');
             playlistElement.classList.add('playlist-item');
@@ -160,11 +171,19 @@ function loadPlaylists() {
 
             const songCount = document.createElement('p');
             songCount.innerText = 
-                `${playlist.songs.length} songs`;
+                `${savedPlaylist.songs.length} songs`;
 
             playlistElement.addEventListener('click', () => {
                 console.log('Clicked playlist', playlist.name)
-                console.log('clicked songs', playlist.song)
+                console.log('Songs', playlist.songs)
+
+                playlist = [...savedPlaylist.songs]
+
+                songIndex = 0
+
+                loadSong(playlist[songIndex])
+                displayQueue()
+                playSong()
             })
 
             playlistElement.appendChild(playlistName);
