@@ -186,3 +186,18 @@ body {
   cursor: pointer;
 }
 
+.playlist-item {
+  background-color: #c9143a;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.playlist-item h3 {
+  margin: 0;
+}
+
+.playlist-item p {
+  margin: 5px 0 0;
+}

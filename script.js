@@ -11,6 +11,9 @@ const queue = document.querySelector('#queue')
 const addToQueueBtn = document.querySelector('#add-to-queue')
 const songSelect = document.querySelector('#song-select')
 const volume = document.querySelector('#volume')
+const addPlaylistBtn = document.querySelector('#add-playlist')
+const folderInput = document.querySelector('#folder-input')
+const playlistsContainer = document.querySelector('#playlists')
 //song titles
 const songs = ['hey', 'summer', 'ukulele']
 let playlist = [...songs]
@@ -113,6 +116,69 @@ function addToQueue() {
     displayQueue()
 }
 
+function savePlaylist(name, songs) {
+    const transaction = db.transaction(['playlists'], 'readwrite')
+    const store = transaction.objectStore('playlists')
+
+    store.add({
+        name: name,
+        songs: songs,
+        createdAt: Date.now()
+    })
+
+    transaction.oncomplete = () => {
+        console.log(`playlist "${name}" saved!`)
+        loadPlaylists()
+    }
+
+    transaction.onerror = (e) => {
+        console.error('COuld not save the playlist: ', e.target.error)
+    }
+}
+
+function loadPlaylists() {
+    if (!db) return
+
+    const transaction = db.transaction(['playlists'], 'readonly')
+    const store = transaction.objectStore('playlists')
+
+    const request = store.getAll()
+
+    request.onsuccess = () => {
+        console.log('saved playlists:', request.result)
+
+        playlistsContainer.innerHTML = '';
+
+        request.result.forEach(playlist => {
+
+            const playlistElement = document.createElement('div');
+            playlistElement.classList.add('playlist-item');
+
+
+            const playlistName = document.createElement('h3');
+            playlistName.innerText = playlist.name;
+
+            const songCount = document.createElement('p');
+            songCount.innerText = 
+                `${playlist.songs.length} songs`;
+
+            playlistElement.addEventListener('click', () => {
+                console.log('Clicked playlist', playlist.name)
+                console.log('clicked songs', playlist.song)
+            })
+
+            playlistElement.appendChild(playlistName);
+            playlistElement.appendChild(songCount);
+
+            playlistsContainer.appendChild(playlistElement);
+        });
+    };
+
+    request.onerror = (e) => {
+        console.error('could not load playlists:', e.target.error);
+    };
+}
+
  playBtn.addEventListener('click', () => {
     const isPlaying = musicContainer.classList.contains('play')
 
@@ -136,3 +202,53 @@ addToQueueBtn.addEventListener('click', addToQueue)
 volume.addEventListener('input', () => {
     audio.volume = volume.value
 })
+
+addPlaylistBtn.addEventListener('click', () => {
+    folderInput.click()
+})
+
+folderInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files)
+
+    const mp3files = files.filter(file => 
+        file.type === 'audio/mpeg'
+    )
+
+    if (mp3files.length === 0) {
+        alert('No MP3 files Found in Tis folder.')
+        return
+    }
+
+    const playlistName = files[0].webkitRelativePath.split('/')[0]
+
+    savePlaylist(playlistName, mp3files)
+})
+
+// adding indexed datbase 
+
+let db;
+
+const request = indexedDB.open('musicPlayerDB', 1);
+
+request.onupgradeneeded = (e) => {
+    db = e.target.result;
+
+    if (!db.objectStoreNames.contains('playlists')) {
+        db.createObjectStore('playlists', {
+            keyPath: 'id',
+            autoIncrement: true
+        });
+    }
+
+};
+
+request.onsuccess = (e) => {
+    db = e.target.result;
+    console.log('IndexedDB connected ');
+
+    loadPlaylists();
+};
+
+request.onerror = (e) => {
+    console.error('IndexedDB error:', e.target.error);
+};
