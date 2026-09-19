@@ -108,7 +108,7 @@ function displayQueue() {
     playlist.forEach((song, index) => {
         const li = document.createElement('li')
 
-        li.innerText = song
+        li.innerText = typeof song === 'string' ? song : song.name.replace('.mp3', '')
         li.addEventListener('click', () => {
             songIndex = index
             loadSong(playlist[songIndex])
@@ -159,6 +159,29 @@ function loadPlaylists() {
 
         playlistsContainer.innerHTML = '';
 
+        const localPlaylist = document.createElement('div')
+        localPlaylist.classList.add('playlist-item')
+
+        const localName = document.createElement('h3')
+       localName.innerText = 'Local'
+       
+       const localSongCount = document.createElement('p')
+       localSongCount.innerText = `${songs.length} songs`
+
+       localPlaylist.addEventListener('click', () => {
+        playlist = [...songs]
+        songIndex = 0
+
+        loadSong(playlist[songIndex])
+        displayQueue()
+        playSong()
+       })
+
+       localPlaylist.appendChild(localName)
+       localPlaylist.appendChild(localSongCount)
+
+       playlistsContainer.appendChild(localPlaylist)
+
         request.result.forEach(savedPlaylist => {
 
 
@@ -167,7 +190,7 @@ function loadPlaylists() {
 
 
             const playlistName = document.createElement('h3');
-            playlistName.innerText = playlist.name;
+            playlistName.innerText = savedPlaylist.name;
 
             const songCount = document.createElement('p');
             songCount.innerText = 
@@ -238,7 +261,10 @@ folderInput.addEventListener('change', (e) => {
         return
     }
 
-    const playlistName = files[0].webkitRelativePath.split('/')[0]
+    const playlistName = prompt('Enter playlist name:')
+    console.log("FILES:", files)
+    console.log("PATH:", files[0].webkitRelativePath)
+    console.log("PLAYLIST NAME:", playlistName)
 
     savePlaylist(playlistName, mp3files)
 })
