@@ -10,11 +10,11 @@ body {
     rgb(11, 4, 11) 23.8%,
     rgb(29, 6, 20) 92%
   );
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-family: 'Lato', sans-serif;
   margin: 0;
 }
@@ -26,7 +26,7 @@ body {
   display: flex;
   padding: 20px 30px;
   position: relative;
-  margin: 100px 0;
+  margin: 40px 0 20px;
   z-index: 10;
 }
 
@@ -145,8 +145,11 @@ body {
   border-radius: 15px;
   width: 400px;
   padding: 20px;
-  margin-top: -80px;
+  margin-top: 0;
   color: white;
+  max-height: 300px;
+  flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .queue-container h2 {
