@@ -58,21 +58,39 @@
     </div>
 
     <div class="playlist-section">
-      <h3>My playlist</h3>
+      <div class="playlist-header">
+        <h3 id="current-playlist-name">My playlist</h3>
+
+        <div class="playlist-controls">
+          <button id="playlist-play" class="playlist-btn">
+            <i class="fas fa-play"></i>
+          </button>
+
+          <button id="playlist-shuffle" class="playlist-btn">
+            <i class="fas fa-random"></i>
+          </button>
+
+          <button id="playlist-repeat" class="playlist-btn">
+            <i class="fas fa-redo"></i>
+          </button>
+        </div>
+      </div>
 
       <button id="add-playlist">
-      <i class="fas fa-folder-plus"></i>
-      Add Playlist
-    </button>
-    <div id="playlists"></div>
+        <i class="fas fa-folder-plus"></i>
+        Add Playlist
+      </button>
 
-    <input type="file"
-           id="folder-input"
-           webkitdirectory
-           directory
-           multiple
-           hidden
-           />
+      <div id="playlists"></div>
+
+      <input
+        type="file"
+        id="folder-input"
+        webkitdirectory
+        directory
+        multiple
+        hidden
+      />
     </div>
 
     <script src="script.js"></script>

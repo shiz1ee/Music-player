@@ -210,6 +210,47 @@ body {
   cursor: pointer;
 }
 
+.playlist-section {
+  width: 90%;
+  max-width: 900px;
+  margin: 20px 0 40px;
+  color: white;
+}
+
+.playlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.playlist-header h3 {
+  margin: 0 ;
+  font-size: 24px;
+}
+
+.playlist-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px ;
+
+}
+
+.playlist-btn {
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 8px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.playlist-btn:hover {
+  transform: scale(1.15);
+  opacity: 0.8;
+}
+
 .playlist-item {
   background-color: #c9143a;
   padding: 10px 15px;

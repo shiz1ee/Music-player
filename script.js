@@ -12,6 +12,7 @@ const volume = document.querySelector('#volume')
 const addPlaylistBtn = document.querySelector('#add-playlist')
 const folderInput = document.querySelector('#folder-input')
 const playlistsContainer = document.querySelector('#playlists')
+const playlistPlayBtn = document.querySelector('#playlist-play')
 //song titles
 const songs = ['hey', 'summer', 'ukulele']
 const localPlaylist = {
@@ -178,6 +179,8 @@ function loadPlaylists() {
        localSongCount.innerText = `${songs.length} songs`
 
        localPlaylist.addEventListener('click', () => {
+
+        document.querySelector('#current-playlist-name').innerText = 'local'
         playlist = [...songs]
         songIndex = 0
 
@@ -206,8 +209,12 @@ function loadPlaylists() {
                 `${savedPlaylist.songs.length} songs`;
 
             playlistElement.addEventListener('click', () => {
-                console.log('Clicked playlist', playlist.name)
-                console.log('Songs', playlist.songs)
+
+                document.querySelector('#current-playlist-name').innerText =
+                savedPlaylist.name
+
+                console.log('Clicked playlist', savedPlaylist.name)
+                console.log('Songs', savedPlaylist.songs)
 
                 playlist = [...savedPlaylist.songs]
 
@@ -230,6 +237,7 @@ function loadPlaylists() {
     };
 }
 
+// Event listeners
  playBtn.addEventListener('click', () => {
     const isPlaying = musicContainer.classList.contains('play')
 
@@ -276,6 +284,15 @@ folderInput.addEventListener('change', (e) => {
 
     savePlaylist(playlistName, mp3files)
 })
+
+playlistPlayBtn.addEventListener('click', () => {
+    if (playlist.length === 0) return
+
+    songIndex = 0
+    loadSong(playlist[songIndex])
+    playSong()
+})
+
 
 // adding indexed datbase 
 
