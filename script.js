@@ -12,7 +12,8 @@ const volume = document.querySelector('#volume')
 const addPlaylistBtn = document.querySelector('#add-playlist')
 const folderInput = document.querySelector('#folder-input')
 const playlistsContainer = document.querySelector('#playlists')
-const playlistPlayBtn = document.querySelector('#playlist-play')
+
+
 //song titles
 const songs = ['hey', 'summer', 'ukulele']
 const localPlaylist = {
@@ -72,14 +73,13 @@ function prevSong() {
 }
 
 function nextSong() {
-    playlist.shift()
+    if (playlist.length === 0) return 
+    songIndex++
 
-    if (playlist.length === 0) {
+    if (songIndex >= playlist.length) {
         songIndex = 0
-        return
     }
 
-    songIndex = 0 
     loadSong(playlist[songIndex])
     displayQueue()
     playSong()
@@ -161,63 +161,145 @@ function loadPlaylists() {
 
     const transaction = db.transaction(['playlists'], 'readonly')
     const store = transaction.objectStore('playlists')
-
     const request = store.getAll()
 
     request.onsuccess = () => {
-        console.log('saved playlists:', request.result)
+        playlistsContainer.innerHTML = ''
 
-        playlistsContainer.innerHTML = '';
-
-        const localPlaylist = document.createElement('div')
-        localPlaylist.classList.add('playlist-item')
+        const localPlaylistElement = document.createElement('div')
+        localPlaylistElement.classList.add('playlist-item')
 
         const localName = document.createElement('h3')
-       localName.innerText = 'Local'
-       
-       const localSongCount = document.createElement('p')
-       localSongCount.innerText = `${songs.length} songs`
+        localName.innerText = 'Local'
 
-       localPlaylist.addEventListener('click', () => {
+        const localSongCount = document.createElement('p')
+        localSongCount.innerText = `${songs.length} songs`
 
-        document.querySelector('#current-playlist-name').innerText = 'local'
-        playlist = [...songs]
-        songIndex = 0
+        const localControls = document.createElement('div')
+        localControls.classList.add('playlist-controls')
 
-        loadSong(playlist[songIndex])
-        displayQueue()
-        playSong()
-       })
+        const localPlayBtn = document.createElement('button')
+        localPlayBtn.classList.add('playlist-btn')
+        localPlayBtn.innerHTML = '<i class="fas fa-play"></i>'
 
-       localPlaylist.appendChild(localName)
-       localPlaylist.appendChild(localSongCount)
+        localPlayBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
 
-       playlistsContainer.appendChild(localPlaylist)
+            currentPlaylist = localPlaylist
+            playlist = [...localPlaylist.songs]
+            songIndex = 0
+
+            loadSong(playlist[songIndex])
+            displayQueue()
+            playSong()
+        })
+
+        const localShuffleBtn = document.createElement('button')
+        localShuffleBtn.classList.add('playlist-btn')
+        localShuffleBtn.innerHTML = '<i class="fas fa-random"></i>'
+
+        if (localPlaylist.shuffleEnabled) {
+            localShuffleBtn.classList.add('active')
+        }
+
+        localShuffleBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+
+            localPlaylist.shuffleEnabled =
+                !localPlaylist.shuffleEnabled
+
+            localShuffleBtn.classList.toggle(
+                'active',
+                localPlaylist.shuffleEnabled
+            )
+
+            console.log(
+                'Local shuffle:',
+                localPlaylist.shuffleEnabled
+            )
+        })
+
+        const localRepeatBtn = document.createElement('button')
+        localRepeatBtn.classList.add('playlist-btn')
+        localRepeatBtn.innerHTML = '<i class="fas fa-redo"></i>'
+
+        if (localPlaylist.repeatEnabled) {
+            localRepeatBtn.classList.add('active')
+        }
+
+        localRepeatBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+
+            localPlaylist.repeatEnabled =
+                !localPlaylist.repeatEnabled
+
+            localRepeatBtn.classList.toggle(
+                'active',
+                localPlaylist.repeatEnabled
+            )
+
+            console.log(
+                'Local repeat:',
+                localPlaylist.repeatEnabled
+            )
+        })
+
+        localPlaylistElement.addEventListener('click', () => {
+            currentPlaylist = localPlaylist
+
+            document.querySelector('#current-playlist-name').innerText =
+                'local'
+
+            playlist = [...localPlaylist.songs]
+            songIndex = 0
+
+            loadSong(playlist[songIndex])
+            displayQueue()
+            playSong()
+        })
+
+        localControls.appendChild(localPlayBtn)
+        localControls.appendChild(localShuffleBtn)
+        localControls.appendChild(localRepeatBtn)
+
+        localPlaylistElement.appendChild(localName)
+        localPlaylistElement.appendChild(localSongCount)
+        localPlaylistElement.appendChild(localControls)
+
+        playlistsContainer.appendChild(localPlaylistElement)
 
         request.result.forEach(savedPlaylist => {
+            if (savedPlaylist.repeatEnabled === undefined) {
+                savedPlaylist.repeatEnabled = false
+            }
 
+            if (savedPlaylist.shuffleEnabled === undefined) {
+                savedPlaylist.shuffleEnabled = false
+            }
 
-            const playlistElement = document.createElement('div');
-            playlistElement.classList.add('playlist-item');
+            const playlistElement = document.createElement('div')
+            playlistElement.classList.add('playlist-item')
 
+            const playlistName = document.createElement('h3')
+            playlistName.innerText = savedPlaylist.name
 
-            const playlistName = document.createElement('h3');
-            playlistName.innerText = savedPlaylist.name;
+            const songCount = document.createElement('p')
+            songCount.innerText =
+                `${savedPlaylist.songs.length} songs`
 
-            const songCount = document.createElement('p');
-            songCount.innerText = 
-                `${savedPlaylist.songs.length} songs`;
+            const playlistControls = document.createElement('div')
+            playlistControls.classList.add('playlist-controls')
 
-            playlistElement.addEventListener('click', () => {
+            const playButton = document.createElement('button')
+            playButton.classList.add('playlist-btn')
+            playButton.innerHTML =
+                '<i class="fas fa-play"></i>'
 
-                document.querySelector('#current-playlist-name').innerText =
-                savedPlaylist.name
+            playButton.addEventListener('click', (e) => {
+                e.stopPropagation()
 
-                console.log('Clicked playlist', savedPlaylist.name)
-                console.log('Songs', savedPlaylist.songs)
-
+                currentPlaylist = savedPlaylist
                 playlist = [...savedPlaylist.songs]
-
                 songIndex = 0
 
                 loadSong(playlist[songIndex])
@@ -225,16 +307,92 @@ function loadPlaylists() {
                 playSong()
             })
 
-            playlistElement.appendChild(playlistName);
-            playlistElement.appendChild(songCount);
+            const shuffleButton = document.createElement('button')
+            shuffleButton.classList.add('playlist-btn')
+            shuffleButton.innerHTML =
+                '<i class="fas fa-random"></i>'
 
-            playlistsContainer.appendChild(playlistElement);
-        });
-    };
+            if (savedPlaylist.shuffleEnabled) {
+                shuffleButton.classList.add('active')
+            }
+
+            shuffleButton.addEventListener('click', (e) => {
+                e.stopPropagation()
+
+                savedPlaylist.shuffleEnabled =
+                    !savedPlaylist.shuffleEnabled
+
+                shuffleButton.classList.toggle(
+                    'active',
+                    savedPlaylist.shuffleEnabled
+                )
+
+                console.log(
+                    savedPlaylist.name,
+                    'shuffle:',
+                    savedPlaylist.shuffleEnabled
+                )
+            })
+
+            const repeatButton = document.createElement('button')
+            repeatButton.classList.add('playlist-btn')
+            repeatButton.innerHTML =
+                '<i class="fas fa-redo"></i>'
+
+            if (savedPlaylist.repeatEnabled) {
+                repeatButton.classList.add('active')
+            }
+
+            repeatButton.addEventListener('click', (e) => {
+                e.stopPropagation()
+
+                savedPlaylist.repeatEnabled =
+                    !savedPlaylist.repeatEnabled
+
+                repeatButton.classList.toggle(
+                    'active',
+                    savedPlaylist.repeatEnabled
+                )
+
+                console.log(
+                    savedPlaylist.name,
+                    'repeat:',
+                    savedPlaylist.repeatEnabled
+                )
+            })
+
+            playlistElement.addEventListener('click', () => {
+                currentPlaylist = savedPlaylist
+
+                document.querySelector('#current-playlist-name').innerText =
+                    savedPlaylist.name
+
+                playlist = [...savedPlaylist.songs]
+                songIndex = 0
+
+                loadSong(playlist[songIndex])
+                displayQueue()
+                playSong()
+            })
+
+            playlistControls.appendChild(playButton)
+            playlistControls.appendChild(shuffleButton)
+            playlistControls.appendChild(repeatButton)
+
+            playlistElement.appendChild(playlistName)
+            playlistElement.appendChild(songCount)
+            playlistElement.appendChild(playlistControls)
+
+            playlistsContainer.appendChild(playlistElement)
+        })
+    }
 
     request.onerror = (e) => {
-        console.error('could not load playlists:', e.target.error);
-    };
+        console.error(
+            'could not load playlists:',
+            e.target.error
+        )
+    }
 }
 
 // Event listeners
@@ -254,8 +412,16 @@ nextBtn.addEventListener('click', nextSong)
 audio.addEventListener('timeupdate', updateProgress)
 
 progressContainer.addEventListener('click', setProgress)
-
-audio.addEventListener('ended', nextSong)
+//idk
+audio.addEventListener('ended', () => {
+    if (repeatEnabled) {
+        songIndex = 0
+        loadSong(playlist[songIndex])
+        playSong()
+    } else {
+        nextSong()
+    }
+})
 
 volume.addEventListener('input', () => {
     audio.volume = volume.value
@@ -285,13 +451,7 @@ folderInput.addEventListener('change', (e) => {
     savePlaylist(playlistName, mp3files)
 })
 
-playlistPlayBtn.addEventListener('click', () => {
-    if (playlist.length === 0) return
 
-    songIndex = 0
-    loadSong(playlist[songIndex])
-    playSong()
-})
 
 
 // adding indexed datbase 
@@ -322,3 +482,4 @@ request.onsuccess = (e) => {
 request.onerror = (e) => {
     console.error('IndexedDB error:', e.target.error);
 };
+

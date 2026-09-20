@@ -20,8 +20,8 @@ body {
 }
 
 .music-container {
-  background-color: #ed1640;
-  border-radius: 15px;
+  background-color: #6f0000;
+  border-radius: 5px;
   box-shadow: 0 20px 20px 0 rgba(111, 93, 93, 0.6);
   display: flex;
   padding: 20px 30px;
@@ -37,7 +37,7 @@ body {
 
 .img-container::after {
   content: '';
-  background-color: #8b1313;
+  background-color: #6f0000;
   border-radius: 50%;
   position: absolute;
   bottom: 100%;
@@ -82,9 +82,9 @@ body {
 }
 
 .action-btn {
-  background-color: #ed1640;
+  background-color: #6f0000;
   border: 0;
-  color: #f3f3f6;
+  color: #000c18;
   font-size: 20px;
   cursor: pointer;
   padding: 10px;
@@ -92,7 +92,7 @@ body {
 }
 
 .action-btn.action-btn-big {
-  color: #f8f6fb;
+  color: #000c18;
   font-size: 30px;
 }
 
@@ -101,8 +101,8 @@ body {
 }
 
 .music-info {
-  background-color:  #9f304a;
-  border-radius: 15px 15px 0 0;
+  background-color:  #6f0000;
+  border-radius: 5px 5px 0 0;
   position: absolute;
   top: 0;
   left: 20px;
@@ -141,13 +141,13 @@ body {
 }
 
 .queue-container {
-  background-color:  #ed1640;
-  border-radius: 15px;
+  background-color:  #6f0000;
+  border-radius: 5px;
   width: 400px;
   padding: 20px;
   margin-top: 0;
   color: white;
-  max-height: 300px;
+  max-height: 250px;
   flex-shrink: 0;
   overflow-y: auto;
 }
@@ -160,7 +160,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #fbf4fb;
+  color: #000c18;
   margin-left: 20px;
 
 }
@@ -214,7 +214,7 @@ body {
   width: 90%;
   max-width: 900px;
   margin: 20px 0 40px;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .playlist-header {
@@ -252,10 +252,10 @@ body {
 }
 
 .playlist-item {
-  background-color: #c9143a;
+  background-color: #6f0000;
   padding: 10px 15px;
   margin: 10px 0;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   min-width: 150px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -279,4 +279,9 @@ body {
   flex-wrap: wrap;
   gap: 15px;
   justify-content: center;
+}
+
+.playlist-btn.active {
+  color: #420bb0;
+  transform: scale(1.15);
 }
