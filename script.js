@@ -12,6 +12,10 @@ const volume = document.querySelector('#volume')
 const addPlaylistBtn = document.querySelector('#add-playlist')
 const folderInput = document.querySelector('#folder-input')
 const playlistsContainer = document.querySelector('#playlists')
+const playlistPlayBtn = document.querySelector('#playlist-play')
+const playlistShuffleBtn = document.querySelector('#playlist-shuffle')
+const currentPlaylistName = document.querySelector('#current-playlist-name')
+const playlistRepeatBtn = document.querySelector('#playlist-repeat')
 
 
 //song titles
@@ -19,9 +23,15 @@ const songs = ['hey', 'summer', 'ukulele']
 const localPlaylist = {
     id: 'local',
     name: 'local',
-    songs: songs
+    songs: songs,
+    shuffleEnabled: false,
+    repeatEnabled: false
 }
 let playlist = [...songs]
+let shuffleQueue = []
+let shuffleIndex = 0
+let playHistory = {}
+
 
 //keep trak of da song
 let songIndex = 2
@@ -74,16 +84,29 @@ function prevSong() {
 
 function nextSong() {
     if (playlist.length === 0) return 
-    songIndex++
+    
+    if (currentPlaylist && currentPlaylist.shuffleEnabled) {
+        let nextIndex
 
-    if (songIndex >= playlist.length) {
-        songIndex = 0
+        do {
+            nextIndex = Math.floor(Math.random()* playlist.length)
+        } while (playlist.length > 1 && nextIndex === songIndex)
+
+        songIndex = nextIndex
+
+        console.log('shuffle PLAYING:', playlist[songIndex])
+    } else {
+        songIndex++
+        
+        if (songIndex >= playlist.length) {
+            songIndex = 0
+        }
+
+        console.log('NORMAL PLAYING:', playlist[songIndex])
     }
-
     loadSong(playlist[songIndex])
     displayQueue()
     playSong()
-
 }
 
 function updateProgress(e) {
@@ -175,96 +198,23 @@ function loadPlaylists() {
         const localSongCount = document.createElement('p')
         localSongCount.innerText = `${songs.length} songs`
 
-        const localControls = document.createElement('div')
-        localControls.classList.add('playlist-controls')
-
-        const localPlayBtn = document.createElement('button')
-        localPlayBtn.classList.add('playlist-btn')
-        localPlayBtn.innerHTML = '<i class="fas fa-play"></i>'
-
-        localPlayBtn.addEventListener('click', (e) => {
-            e.stopPropagation()
-
-            currentPlaylist = localPlaylist
-            playlist = [...localPlaylist.songs]
-            songIndex = 0
-
-            loadSong(playlist[songIndex])
-            displayQueue()
-            playSong()
-        })
-
-        const localShuffleBtn = document.createElement('button')
-        localShuffleBtn.classList.add('playlist-btn')
-        localShuffleBtn.innerHTML = '<i class="fas fa-random"></i>'
-
-        if (localPlaylist.shuffleEnabled) {
-            localShuffleBtn.classList.add('active')
-        }
-
-        localShuffleBtn.addEventListener('click', (e) => {
-            e.stopPropagation()
-
-            localPlaylist.shuffleEnabled =
-                !localPlaylist.shuffleEnabled
-
-            localShuffleBtn.classList.toggle(
-                'active',
-                localPlaylist.shuffleEnabled
-            )
-
-            console.log(
-                'Local shuffle:',
-                localPlaylist.shuffleEnabled
-            )
-        })
-
-        const localRepeatBtn = document.createElement('button')
-        localRepeatBtn.classList.add('playlist-btn')
-        localRepeatBtn.innerHTML = '<i class="fas fa-redo"></i>'
-
-        if (localPlaylist.repeatEnabled) {
-            localRepeatBtn.classList.add('active')
-        }
-
-        localRepeatBtn.addEventListener('click', (e) => {
-            e.stopPropagation()
-
-            localPlaylist.repeatEnabled =
-                !localPlaylist.repeatEnabled
-
-            localRepeatBtn.classList.toggle(
-                'active',
-                localPlaylist.repeatEnabled
-            )
-
-            console.log(
-                'Local repeat:',
-                localPlaylist.repeatEnabled
-            )
-        })
 
         localPlaylistElement.addEventListener('click', () => {
             currentPlaylist = localPlaylist
 
-            document.querySelector('#current-playlist-name').innerText =
-                'local'
-
             playlist = [...localPlaylist.songs]
             songIndex = 0
 
             loadSong(playlist[songIndex])
             displayQueue()
+            updatePlaylistControls()
             playSong()
         })
 
-        localControls.appendChild(localPlayBtn)
-        localControls.appendChild(localShuffleBtn)
-        localControls.appendChild(localRepeatBtn)
+        
 
         localPlaylistElement.appendChild(localName)
         localPlaylistElement.appendChild(localSongCount)
-        localPlaylistElement.appendChild(localControls)
 
         playlistsContainer.appendChild(localPlaylistElement)
 
@@ -287,101 +237,22 @@ function loadPlaylists() {
             songCount.innerText =
                 `${savedPlaylist.songs.length} songs`
 
-            const playlistControls = document.createElement('div')
-            playlistControls.classList.add('playlist-controls')
-
-            const playButton = document.createElement('button')
-            playButton.classList.add('playlist-btn')
-            playButton.innerHTML =
-                '<i class="fas fa-play"></i>'
-
-            playButton.addEventListener('click', (e) => {
-                e.stopPropagation()
-
-                currentPlaylist = savedPlaylist
-                playlist = [...savedPlaylist.songs]
-                songIndex = 0
-
-                loadSong(playlist[songIndex])
-                displayQueue()
-                playSong()
-            })
-
-            const shuffleButton = document.createElement('button')
-            shuffleButton.classList.add('playlist-btn')
-            shuffleButton.innerHTML =
-                '<i class="fas fa-random"></i>'
-
-            if (savedPlaylist.shuffleEnabled) {
-                shuffleButton.classList.add('active')
-            }
-
-            shuffleButton.addEventListener('click', (e) => {
-                e.stopPropagation()
-
-                savedPlaylist.shuffleEnabled =
-                    !savedPlaylist.shuffleEnabled
-
-                shuffleButton.classList.toggle(
-                    'active',
-                    savedPlaylist.shuffleEnabled
-                )
-
-                console.log(
-                    savedPlaylist.name,
-                    'shuffle:',
-                    savedPlaylist.shuffleEnabled
-                )
-            })
-
-            const repeatButton = document.createElement('button')
-            repeatButton.classList.add('playlist-btn')
-            repeatButton.innerHTML =
-                '<i class="fas fa-redo"></i>'
-
-            if (savedPlaylist.repeatEnabled) {
-                repeatButton.classList.add('active')
-            }
-
-            repeatButton.addEventListener('click', (e) => {
-                e.stopPropagation()
-
-                savedPlaylist.repeatEnabled =
-                    !savedPlaylist.repeatEnabled
-
-                repeatButton.classList.toggle(
-                    'active',
-                    savedPlaylist.repeatEnabled
-                )
-
-                console.log(
-                    savedPlaylist.name,
-                    'repeat:',
-                    savedPlaylist.repeatEnabled
-                )
-            })
 
             playlistElement.addEventListener('click', () => {
                 currentPlaylist = savedPlaylist
 
-                document.querySelector('#current-playlist-name').innerText =
-                    savedPlaylist.name
-
                 playlist = [...savedPlaylist.songs]
                 songIndex = 0
 
                 loadSong(playlist[songIndex])
                 displayQueue()
+                updatePlaylistControls()
                 playSong()
             })
 
-            playlistControls.appendChild(playButton)
-            playlistControls.appendChild(shuffleButton)
-            playlistControls.appendChild(repeatButton)
 
             playlistElement.appendChild(playlistName)
             playlistElement.appendChild(songCount)
-            playlistElement.appendChild(playlistControls)
 
             playlistsContainer.appendChild(playlistElement)
         })
@@ -392,6 +263,34 @@ function loadPlaylists() {
             'could not load playlists:',
             e.target.error
         )
+    }
+}
+
+function updatePlaylistControls() {
+    if (!currentPlaylist) return
+
+    currentPlaylistName.innerText = currentPlaylist.name
+
+    playlistShuffleBtn.classList.toggle(
+        'active',
+        currentPlaylist.shuffleEnabled
+    )
+
+    playlistRepeatBtn.classList.toggle(
+        'active',
+        currentPlaylist.repeatEnabled
+    )
+}
+
+function createShuffleQueue() {
+    shuffleQueue = [...playlist]
+
+    for (let i = shuffleQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random()* (i +1))
+
+        const temp = shuffleQueue[i]
+        shuffleQueue[i] = shuffleQueue[j]
+        shuffleQueue[j] = temp
     }
 }
 
@@ -414,8 +313,7 @@ audio.addEventListener('timeupdate', updateProgress)
 progressContainer.addEventListener('click', setProgress)
 //idk
 audio.addEventListener('ended', () => {
-    if (repeatEnabled) {
-        songIndex = 0
+    if (currentPlaylist && currentPlaylist.repeatEnabled) {
         loadSong(playlist[songIndex])
         playSong()
     } else {
@@ -451,6 +349,49 @@ folderInput.addEventListener('change', (e) => {
     savePlaylist(playlistName, mp3files)
 })
 
+playlistPlayBtn.addEventListener('click', () => {
+    if (!currentPlaylist || currentPlaylist.songs.length === 0) return
+
+    playlist = [...currentPlaylist.songs]
+    songIndex = 0
+
+    loadSong(playlist[songIndex])
+    displayQueue()
+    playSong()
+})
+
+playlistShuffleBtn.addEventListener('click', () => {
+    if (!currentPlaylist) return
+
+    currentPlaylist.shuffleEnabled =
+        !currentPlaylist.shuffleEnabled
+
+        console.log(
+            'SHUFFLE:',
+            currentPlaylist.shuffleEnabled
+        )
+
+    if (currentPlaylist.shuffleEnabled) {
+        createShuffleQueue()
+        console.log('shuffle QUEUE:', shuffleQueue)
+    } else {
+        shuffleQueue = []
+        shuffleIndex = 0
+    }
+
+    //mlem
+    updatePlaylistControls()
+})
+
+playlistRepeatBtn.addEventListener('click', () => {
+    if (!currentPlaylist) return
+
+    currentPlaylist.repeatEnabled = 
+        !currentPlaylist.repeatEnabled
+
+    updatePlaylistControls()
+})
+
 
 
 
@@ -483,3 +424,4 @@ request.onerror = (e) => {
     console.error('IndexedDB error:', e.target.error);
 };
 
+let currentPlaylist = null
