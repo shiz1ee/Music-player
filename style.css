@@ -17,6 +17,11 @@ body {
   justify-content: flex-start;
   font-family: 'Lato', sans-serif;
   margin: 0;
+  overflow-x: hidden;
+}
+
+h1 {
+  color: white;
 }
 
 .music-container {
@@ -25,8 +30,11 @@ body {
   box-shadow: 0 20px 20px 0 rgba(111, 93, 93, 0.6);
   display: flex;
   padding: 20px 30px;
-  position: relative;
-  margin: 40px 0 20px;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
   z-index: 10;
 }
 
@@ -56,7 +64,6 @@ body {
   bottom: 0;
   left: 0;
   animation: rotate 3s linear infinite;
-
   animation-play-state: paused;
 }
 
@@ -101,7 +108,7 @@ body {
 }
 
 .music-info {
-  background-color:  #6f0000;
+  background-color: #6f0000;
   border-radius: 5px 5px 0 0;
   position: absolute;
   top: 0;
@@ -140,21 +147,6 @@ body {
   transition: width 0.1s linear;
 }
 
-.queue-container {
-  background-color:  #6f0000;
-  border-radius: 5px;
-  width: 400px;
-  padding: 20px;
-  margin-top: 0;
-  color: white;
-  max-height: 250px;
-  flex-shrink: 0;
-  overflow-y: auto;
-}
-
-.queue-container h2 {
-  margin-top: 0;
-}
 
 .volume-container {
   display: flex;
@@ -162,7 +154,35 @@ body {
   gap: 10px;
   color: #000c18;
   margin-left: 20px;
+}
 
+#volume {
+  width: 100px;
+  cursor: pointer;
+}
+
+
+.queue-container {
+  background-color: #6f0000;
+  border-radius: 5px;
+  width: 400px;
+  padding: 20px;
+  margin: 0;
+  color: white;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.35);
+
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.queue-container h2 {
+  margin: 0 0 15px;
+  font-size: 24px;
 }
 
 #queue {
@@ -172,27 +192,25 @@ body {
 }
 
 #queue li {
-  background-color: rgba(0, 0, 0, 0.2);
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.25);
   color: white;
-  padding: 10px;
-  margin: 5px 0;
+  padding: 12px 45px 12px 12px;
+  margin: 7px 0;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 #queue li:hover {
   background-color: rgba(0, 0, 0, 0.35);
 }
 
-#queue li {
-  position: relative;
-}
 .add-queue-btn {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  
   display: none;
   background: white;
   border: none;
@@ -205,16 +223,15 @@ body {
   display: block;
 }
 
-#volume {
-  width: 100px;
-  cursor: pointer;
-}
-
 .playlist-section {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
   width: 90%;
-  max-width: 900px;
-  margin: 20px 0 40px;
-  color: rgb(255, 255, 255);
+  max-width: 1200px;
+  color: white;
+  z-index: 5;
 }
 
 .playlist-header {
@@ -225,15 +242,14 @@ body {
 }
 
 .playlist-header h3 {
-  margin: 0 ;
+  margin: 0;
   font-size: 24px;
 }
 
 .playlist-controls {
   display: flex;
   align-items: center;
-  gap: 12px ;
-
+  gap: 12px;
 }
 
 .playlist-btn {
@@ -251,13 +267,29 @@ body {
   opacity: 0.8;
 }
 
+.playlist-btn.active {
+  color: #420bb0;
+  transform: scale(1.15);
+}
+
+#playlists {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 15px;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+}
+
 .playlist-item {
   background-color: #6f0000;
   padding: 10px 15px;
   margin: 10px 0;
   border-radius: 5px;
   cursor: pointer;
-  min-width: 150px;
+  min-width: 0;
+  flex: 1 1 0;
+  max-width: 180px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -274,14 +306,8 @@ body {
   margin: 5px 0 0;
 }
 
-#playlists {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-}
 
-.playlist-btn.active {
-  color: #420bb0;
-  transform: scale(1.15);
+.main-content {
+  width: 100%;
+  position: relative;
 }
