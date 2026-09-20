@@ -8,8 +8,6 @@ const progressContainer = document.querySelector('.progress-container')
 const title = document.querySelector('#title')
 const cover = document.querySelector('#cover')
 const queue = document.querySelector('#queue')
-const addToQueueBtn = document.querySelector('#add-to-queue')
-const songSelect = document.querySelector('#song-select')
 const volume = document.querySelector('#volume')
 const addPlaylistBtn = document.querySelector('#add-playlist')
 const folderInput = document.querySelector('#folder-input')
@@ -103,27 +101,38 @@ function setProgress(e) {
 }
 
 function displayQueue() {
+
     queue.innerHTML = ''
 
     playlist.forEach((song, index) => {
+
         const li = document.createElement('li')
 
-        li.innerText = typeof song === 'string' ? song : song.name.replace('.mp3', '')
+        const songName = document.createElement('span')
+
+        songName.innerText = typeof song === 'string'
+            ? song
+            : song.name.replace('.mp3', '')
+
+        const addBtn = document.createElement('button')
+        addBtn.innerText = '+'
+
+        addBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+            playlist.push(song)
+            displayQueue()
+        })
+
         li.addEventListener('click', () => {
             songIndex = index
             loadSong(playlist[songIndex])
             playSong()
         })
+
+        li.appendChild(songName)
+        li.appendChild(addBtn)
         queue.appendChild(li)
     })
-}
-
-function addToQueue() {
-    const selectedSong = songSelect.value 
-
-    playlist.push(selectedSong)
-
-    displayQueue()
 }
 
 function savePlaylist(name, songs) {
@@ -239,7 +248,6 @@ audio.addEventListener('timeupdate', updateProgress)
 progressContainer.addEventListener('click', setProgress)
 
 audio.addEventListener('ended', nextSong)
-addToQueueBtn.addEventListener('click', addToQueue)
 
 volume.addEventListener('input', () => {
     audio.volume = volume.value

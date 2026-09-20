@@ -184,6 +184,27 @@ body {
   background-color: rgba(0, 0, 0, 0.35);
 }
 
+#queue li {
+  position: relative;
+}
+.add-queue-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  display: none;
+  background: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+
+#queue li:hover .add-queue-btn {
+  display: block;
+}
+
 #volume {
   width: 100px;
   cursor: pointer;
