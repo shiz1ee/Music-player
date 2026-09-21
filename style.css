@@ -369,7 +369,52 @@ h1 {
   display: block;
 }
 
+@media (max-width: 1300px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .up-next-container {
+    position: static;
+    transform: none;
+    width: min(740px, 92vw);
+    max-height: 160px;
+    margin-top: 16px;
+    flex-shrink: 0;
+  }
+  
+}
 
+@media (max-width: 700px) {
+  .music-container {
+    margin-top: 90px;
+    padding: 20px 15px;
+  }
+
+  .action-btn { margin: 0 8px; }
+
+  .volume-container { display: none; }
+
+  .img-container { width: 90px; }
+  .img-container img { height: 90px; }
+
+  .music-info { padding-left: 120px; }
+
+  #playlists {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .playlist-item { flex: 0 0 150px; }
+}
+
+@media (hover: none) {
+  #queue li .add-queue-btn,
+  #up-next li .add-queue-btn {
+    display: block;
+  }
+}
 
 
 /* yweah i wanna complete this asap but well im me and i want it to look mnore good */
