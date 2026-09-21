@@ -8,6 +8,7 @@ const progressContainer = document.querySelector('.progress-container')
 const title = document.querySelector('#title')
 const cover = document.querySelector('#cover')
 const queue = document.querySelector('#queue')
+const queueContainer = document.querySelector('.queue-container')
 const volume = document.querySelector('#volume')
 const addPlaylistBtn = document.querySelector('#add-playlist')
 const folderInput = document.querySelector('#folder-input')
@@ -16,6 +17,7 @@ const playlistPlayBtn = document.querySelector('#playlist-play')
 const playlistShuffleBtn = document.querySelector('#playlist-shuffle')
 const currentPlaylistName = document.querySelector('#current-playlist-name')
 const playlistRepeatBtn = document.querySelector('#playlist-repeat')
+const upNextList = document.querySelector('#up-next')
 
 
 //song titles
@@ -28,6 +30,7 @@ const localPlaylist = {
     repeatEnabled: false
 }
 let playlist = [...songs]
+let upNext = []
 let shuffleQueue = []
 let shuffleIndex = 0
 let playHistory = {}
@@ -38,8 +41,6 @@ let songIndex = 2
 
 // Initial load song 
 loadSong(songs[songIndex])
-
-displayQueue()
 
 //update song details 
 function loadSong(song) {
@@ -105,7 +106,10 @@ function nextSong() {
         console.log('NORMAL PLAYING:', playlist[songIndex])
     }
     loadSong(playlist[songIndex])
-    displayQueue()
+    
+    if (queueContainer.style.display === 'block') {
+        displayQueue()
+    }
     playSong()
 }
 
@@ -124,7 +128,13 @@ function setProgress(e) {
     audio.currentTime = (clickX / width) * duration
 }
 
+function showQueue() {
+    queueContainer.style.display = 'block'
+
+}
+
 function displayQueue() {
+    showQueue()
 
     queue.innerHTML = ''
 
