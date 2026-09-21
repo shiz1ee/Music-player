@@ -31,8 +31,6 @@ const localPlaylist = {
 }
 let playlist = [...songs]
 let upNext = []
-let shuffleQueue = []
-let shuffleIndex = 0
 let playHistory = {}
 
 
@@ -41,6 +39,7 @@ let songIndex = 2
 
 // Initial load song 
 loadSong(songs[songIndex])
+renderUpNext()
 
 //update song details 
 function loadSong(song) {
@@ -84,29 +83,21 @@ function prevSong() {
 }
 
 function nextSong() {
-    if (playlist.length === 0) return 
-    
-    if (currentPlaylist && currentPlaylist.shuffleEnabled) {
-        let nextIndex
-
-        do {
-            nextIndex = Math.floor(Math.random()* playlist.length)
-        } while (playlist.length > 1 && nextIndex === songIndex)
-
-        songIndex = nextIndex
-
-        console.log('shuffle PLAYING:', playlist[songIndex])
-    } else {
-        songIndex++
-        
-        if (songIndex >= playlist.length) {
-            songIndex = 0
-        }
-
-        console.log('NORMAL PLAYING:', playlist[songIndex])
+    if (upNext.length > 0) {
+        const queued = upNext.shift()
+        loadSong(queued)
+        renderUpNext()
+        playSong()
+        return
     }
+
+    if (playlist.length === 0) return
+
+    songIndex++
+    if (songIndex >= playlist.length) songIndex = 0
+
     loadSong(playlist[songIndex])
-    
+
     if (queueContainer.style.display === 'block') {
         displayQueue()
     }
@@ -150,11 +141,12 @@ function displayQueue() {
 
         const addBtn = document.createElement('button')
         addBtn.innerText = '+'
+        addBtn.classList.add('add-queue-btn')
 
         addBtn.addEventListener('click', (e) => {
             e.stopPropagation()
-            playlist.push(song)
-            displayQueue()
+            upNext.push(song)
+            renderUpNext()
         })
 
         li.addEventListener('click', () => {
@@ -167,6 +159,77 @@ function displayQueue() {
         li.appendChild(addBtn)
         queue.appendChild(li)
     })
+}
+
+function getSongName(song) {
+    return typeof song === 'string' ? song : song.name.replace('.mp3', '')
+}
+
+function renderUpNext() {
+    upNextList.innerHTML = ''
+
+    if (upNext.length === 0) {
+        const empty = document.createElement('li')
+        empty.innerText = 'nothing queued'
+        empty.classList.add('empty')
+        upNextList.appendChild(empty)
+        return
+    }
+
+    upNext.forEach((song, index) => {
+        const li = document.createElement('li')
+        const name = document.createElement('span')
+        name.innerText = getSongName(song)
+
+        const removeBtn = document.createElement('button')
+        removeBtn.innerText = 'x'
+        removeBtn.classList.add('add-quque-btn')
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+            upNext.splice(index, 1)
+            renderUpNext()
+        })
+
+        li.appendChild(name)
+        li.appendChild(removeBtn)
+        upNextList.appendChild(li)
+    })
+}
+
+function shufflePlaylist(keepCurrent) {
+    const current = playlist[songIndex]
+
+    for (let i = playlist.length - 1; i> 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        const temp = playlist[i]
+        playlist[i] = playlist[j]
+        playlist[j] = temp
+    }
+
+    if (keepCurrent) {
+        playlist.splice(playlist.indexOf(current), 1)
+        playlist.unshift(current)
+    }
+    songIndex = 0
+}
+
+function unshufflePlaylist() {
+    const current = playlist[songIndex]
+    playlist = [...currentPlaylist.songs]
+    songIndex = Math.max(0, playlist.indexOf(current))
+}
+
+function selectPlaylist(selected) {
+    currentPlaylist = selected
+    playlist = [...selected.songs]
+    songIndex = 0
+
+    if (selected.shuffleEnabled) shufflePlaylist(false)
+
+    loadSong(playlist[songIndex])
+    displayQueue()
+    updatePlaylistControls()
+    playSong()
 }
 
 function savePlaylist(name, songs) {
@@ -210,15 +273,7 @@ function loadPlaylists() {
 
 
         localPlaylistElement.addEventListener('click', () => {
-            currentPlaylist = localPlaylist
-
-            playlist = [...localPlaylist.songs]
-            songIndex = 0
-
-            loadSong(playlist[songIndex])
-            displayQueue()
-            updatePlaylistControls()
-            playSong()
+            selectPlaylist(localPlaylist)
         })
 
         
@@ -249,15 +304,7 @@ function loadPlaylists() {
 
 
             playlistElement.addEventListener('click', () => {
-                currentPlaylist = savedPlaylist
-
-                playlist = [...savedPlaylist.songs]
-                songIndex = 0
-
-                loadSong(playlist[songIndex])
-                displayQueue()
-                updatePlaylistControls()
-                playSong()
+                selectPlaylist(savedPlaylist)
             })
 
 
@@ -290,18 +337,6 @@ function updatePlaylistControls() {
         'active',
         currentPlaylist.repeatEnabled
     )
-}
-
-function createShuffleQueue() {
-    shuffleQueue = [...playlist]
-
-    for (let i = shuffleQueue.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random()* (i +1))
-
-        const temp = shuffleQueue[i]
-        shuffleQueue[i] = shuffleQueue[j]
-        shuffleQueue[j] = temp
-    }
 }
 
 // Event listeners
@@ -361,35 +396,21 @@ folderInput.addEventListener('change', (e) => {
 
 playlistPlayBtn.addEventListener('click', () => {
     if (!currentPlaylist || currentPlaylist.songs.length === 0) return
-
-    playlist = [...currentPlaylist.songs]
-    songIndex = 0
-
-    loadSong(playlist[songIndex])
-    displayQueue()
-    playSong()
+    selectPlaylist(currentPlaylist)
 })
 
 playlistShuffleBtn.addEventListener('click', () => {
     if (!currentPlaylist) return
 
-    currentPlaylist.shuffleEnabled =
-        !currentPlaylist.shuffleEnabled
-
-        console.log(
-            'SHUFFLE:',
-            currentPlaylist.shuffleEnabled
-        )
+    currentPlaylist.shuffleEnabled = !currentPlaylist.shuffleEnabled
 
     if (currentPlaylist.shuffleEnabled) {
-        createShuffleQueue()
-        console.log('shuffle QUEUE:', shuffleQueue)
+        shufflePlaylist(true)
     } else {
-        shuffleQueue = []
-        shuffleIndex = 0
+        unshufflePlaylist()
     }
 
-    //mlem
+    displayQueue()
     updatePlaylistControls()
 })
 

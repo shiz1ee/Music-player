@@ -369,8 +369,44 @@ h1 {
   display: block;
 }
 
-@media (max-width: 1300px) {
-  .up-next-container {
-    display: none;
-  }
+
+
+
+/* yweah i wanna complete this asap but well im me and i want it to look mnore good */
+
+.queue-container,
+.up-next-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25);
+}
+
+.queue-container::-webkit-scrollbar,
+.up-next-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.queue-container::-webkit-scrollbar-track,
+.up-next-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.queue-container::-webkit-scrollbar-track,
+.up-next-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.queue-container::-webkit-scrollbar-thumb:hover,
+.up-next-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.queue-container::-webkit-scrollbar-button,
+.up-next-container::-webkit-scrollbar-button {
+  display: none;
+}
+
+.queue-container,
+.up-next-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
